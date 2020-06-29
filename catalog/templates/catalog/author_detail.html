@@ -11,6 +11,16 @@
 		<p><strong><a href="{% url 'book-detail' book.pk %}"> {{ book.title }} </a></strong></p>
 		<p>{{ book.summary }}</p>
 		<p><strong>Genre:</strong> {{ book.display_genre }} </p>
+		
+		{% if book.get_instance_count > 0 %}
+			{% if book.get_available_count > 0 %}
+				<p><strong>Available coppies: </strong> {{ book.get_available_count }} </p>
+			{% else %}
+				<p><strong>Appearance date: </strong> {{ book.get_nearest_instance_date }} </p>
+			{% endif %}
+		{% else %}
+			<p><strong>Оut of stock</strong> </p>
+		{% endif %}
 	{% endfor %}
 </div>
 

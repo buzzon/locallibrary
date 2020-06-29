@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from datetime import date
 import uuid
 
 class Genre(models.Model):
@@ -31,6 +32,19 @@ class Book(models.Model):
 	def display_genre(self):
 		return ', '.join([ genre.name for genre in self.genre.all()[:3] ])
 	display_genre.short_description = 'Genre'
+
+	def get_available_count(self):
+		return self.bookinstance_set.filter(status__exact='a').count()
+
+	def get_instance_count(self):
+		return self.bookinstance_set.count()
+
+	def get_nearest_instance_date(self):
+		on_loan = self.bookinstance_set.filter(status__exact='o')
+		date_back = on_loan.first().due_back
+		for date in on_loan:
+			date_back = min(date_back, date.due_back)
+		return date_back 
 
 class BookInstance(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Unique ID for this particular book across whole library")
